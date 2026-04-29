@@ -28,12 +28,7 @@ jobs:
         with:
           dotnet-version: "8.0.x"
 
-      - name: Upload main package (.nupkg)
-        run: dotnet nuget push "./nupkgs/*.nupkg" \
-             --api-key ${{ secrets.NUGET_API_KEY }} \
-             --source https://api.nuget.org/v3/index.json
-
-      - name: Upload symbol package (.snupkg)
-        run: dotnet nuget push "./nupkgs/*.snupkg" \
-             --api-key ${{ secrets.NUGET_API_KEY }} \
-             --source https://api.nuget.org/v3/index.json
+      - name: Upload NuGet packages
+        run: |
+          dotnet nuget push "./nupkgs/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+          dotnet nuget push "./nupkgs/*.snupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
