@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Metalhead.BrowserCaptureRewrite.Abstractions.Tests/Metalhead.BrowserCaptureRewrite.Abstractions.Tests.csproj" />
+  <Project Path="Metalhead.BrowserCaptureRewrite.Abstractions/Metalhead.BrowserCaptureRewrite.Abstractions.csproj" />
+</Solution>
