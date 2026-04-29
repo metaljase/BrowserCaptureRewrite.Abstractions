@@ -10,7 +10,7 @@ A key part for capturing in-flight HTTP responses is creating a `CaptureSpec` in
 With a browser instance, an overload in one of the [convenience classes or extension methods](#capturerewrite-methods) can be called to perform the navigation, capture, and optional rewrite, by providing a `CaptureSpec` and optionally a `RewriteSpec` instance.
 
 # Implementations
-[`BrowserCaptureRewrite.Playwright`](https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Playwright) is a .NET library that implements the abstractions defined in `BrowserCaptureRewrite.Abstractions` using [Playwright](https://playwright.dev/dotnet/) to drive a browser instance.  It can capture and rewrite in-flight HTTP responses from web pages loaded in a Playwright-driven browser.
+[`BrowserCaptureRewrite.Playwright`](https://github.com/metaljase/BrowserCaptureRewrite.Playwright) is a .NET library that implements the abstractions defined in `BrowserCaptureRewrite.Abstractions` using [Playwright](https://playwright.dev/dotnet/) to drive a browser instance.  It can capture and rewrite in-flight HTTP responses from web pages loaded in a Playwright-driven browser.
 
 # Setup instructions
 ## Installing `BrowserCaptureRewrite.Abstractions`
@@ -22,7 +22,7 @@ dotnet add package Metalhead.BrowserCaptureRewrite.Abstractions
 ## Configuration
 The following settings can be added to `appsettings.json` or supplied through any other .NET configuration provider (e.g. environment variables, user secrets, command‑line arguments).
 
-XML documentation for [`NavigationTimingOptions`](https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/NavigationTimingOptions.cs), [`SignInOptions`](https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/SignInOptions.cs), [`CaptureTimingOptions`](https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/CaptureTimingOptions.cs), [`BrowserOptions`](https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/BrowserOptions.cs), [`ResiliencePolicyOptions`](https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Resilience/ResiliencePolicyOptions.cs), and [`ConnectivityProbeOptions`](https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Connectivity/ConnectivityProbeOptions.cs) is available in the source code.
+XML documentation for [`NavigationTimingOptions`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/NavigationTimingOptions.cs), [`SignInOptions`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/SignInOptions.cs), [`CaptureTimingOptions`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/CaptureTimingOptions.cs), [`BrowserOptions`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/BrowserOptions.cs), [`ResiliencePolicyOptions`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Resilience/ResiliencePolicyOptions.cs), and [`ConnectivityProbeOptions`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Connectivity/ConnectivityProbeOptions.cs) is available in the source code.
 
 ```json
 {
@@ -92,7 +92,7 @@ builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<ConnectivityP
 ```
 
 # Examples
-For brevity, the following examples omit exception handling and assume the [setup steps](#setup-instructions) have already been completed.  For examples with exception handling and dependency injection, see the `BrowserCaptureRewrite.Samples` & `BrowserCaptureRewrite.Samples.Core` projects in the [`BrowserCaptureRewrite.Playwright`](https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Playwright) repository.
+For brevity, the following examples omit exception handling and assume the [setup steps](#setup-instructions) have already been completed.  For examples with exception handling and dependency injection, see the `BrowserCaptureRewrite.Samples` & `BrowserCaptureRewrite.Samples.Core` projects in the [`BrowserCaptureRewrite.Playwright`](https://github.com/metaljase/BrowserCaptureRewrite.Playwright) repository.
 
 ## Using extension methods
 The extension methods are the simplest solution for capturing in-flight HTTP responses from known URLs or URLs with specific file extensions, because custom capture‑completion logic is not required.  The following example performs two separate capture operations, 1) capturing responses containing JSON data by their URLs, and 2) capturing responses by their file extension.
@@ -171,7 +171,7 @@ public class ExtensionMinimalSample(
 ```
 
 ## Using an IBrowserDomCaptureService convenience method
-The convenience methods provide the most flexible solution for capturing in-flight HTTP responses when you need custom capture-completion logic or response-rewrite logic.  The following example captures responses containing JSON data by their URLs (via a [`CaptureSpec`](https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/CaptureSpec.cs)) and rewrites the response body of `bands_a-m.json` by adding more bands (via a [`RewriteSpec`](https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/RewriteSpec.cs)) before the rewritten response is processed by the client-side code.  The custom capture-completion logic ensures capture only completes once all targeted URLs have been captured, rather than relying on the default period of network inactivity (500ms).
+The convenience methods provide the most flexible solution for capturing in-flight HTTP responses when you need custom capture-completion logic or response-rewrite logic.  The following example captures responses containing JSON data by their URLs (via a [`CaptureSpec`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/CaptureSpec.cs)) and rewrites the response body of `bands_a-m.json` by adding more bands (via a [`RewriteSpec`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/RewriteSpec.cs)) before the rewritten response is processed by the client-side code.  The custom capture-completion logic ensures capture only completes once all targeted URLs have been captured, rather than relying on the default period of network inactivity (500ms).
 ```csharp
 public class ConvenienceMinimalSample(
     NavigationTimingOptions navigationTimingOptions,
@@ -292,7 +292,7 @@ public class ConvenienceMinimalSample(
 ## Return types
 The methods for capturing and rewriting in-flight HTTP responses return either a `Task<IReadOnlyList<CapturedResource>>` or a `Task<PageCaptureResult>`, depending on the method called.
 
-XML documentation for [`CapturedResource`](https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/CapturedResource.cs), [`PageCaptureResult`](https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/PageCaptureResult.cs), [`PageLoadStatus`](https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Enums/PageLoadStatus.cs), and [`CaptureStatus`](https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Enums/CaptureStatus.cs) is available in the source code.
+XML documentation for [`CapturedResource`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/CapturedResource.cs), [`PageCaptureResult`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/PageCaptureResult.cs), [`PageLoadStatus`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Enums/PageLoadStatus.cs), and [`CaptureStatus`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Enums/CaptureStatus.cs) is available in the source code.
 ```csharp
 public sealed record CapturedResource(
     Uri Url,
@@ -332,7 +332,7 @@ public enum CaptureStatus
 
 
 ## Extension methods
-XML documentation for [`BrowserCaptureServiceExtensions`](https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/BrowserCaptureServiceExtensions.cs) and [`BrowserDomCaptureServiceExtensions`](https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/BrowserDomCaptureServiceExtensions.cs) is available in the source code.
+XML documentation for [`BrowserCaptureServiceExtensions`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/BrowserCaptureServiceExtensions.cs) and [`BrowserDomCaptureServiceExtensions`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/BrowserDomCaptureServiceExtensions.cs) is available in the source code.
 
 Methods in `BrowserCaptureServiceExtensions` only return in-flight HTTP responses, and does not return the page's response HTML or rendered HTML.
 
@@ -394,9 +394,9 @@ public static async Task<PageCaptureResult> NavigateAndCaptureHtmlAndResourcesRe
 ```
 
 ## Convenience classes / interfaces
-XML documentation for [`IBrowserDomService`](https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserDomService.cs), [`IBrowserCaptureService`](https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserCaptureService.cs), and [`IBrowserDomCaptureService`](https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserDomCaptureService.cs) is available in the source code.
+XML documentation for [`IBrowserDomService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserDomService.cs), [`IBrowserCaptureService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserCaptureService.cs), and [`IBrowserDomCaptureService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserDomCaptureService.cs) is available in the source code.
 
-[`IBrowserDomService`](https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserDomService.cs):  Implementations (`DefaultBrowserDomService`) only return the page's response HTML and/or rendered HTML, and do not return in-flight HTTP responses.
+[`IBrowserDomService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserDomService.cs):  Implementations (`DefaultBrowserDomService`) only return the page's response HTML and/or rendered HTML, and do not return in-flight HTTP responses.
 
 ```csharp
 Task<string?> NavigateAndCaptureResponseHtmlAsync(
@@ -474,7 +474,7 @@ Task<PageCaptureResult> NavigateAndCaptureResponseAndRenderedHtmlResultAsync(
     CancellationToken cancellationToken = default);
 ```
 
-[`IBrowserCaptureService`](https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserCaptureService.cs): Implementations (`DefaultBrowserCaptureService`) only return in-flight HTTP responses, and do not return the page's response HTML or rendered HTML.
+[`IBrowserCaptureService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserCaptureService.cs): Implementations (`DefaultBrowserCaptureService`) only return in-flight HTTP responses, and do not return the page's response HTML or rendered HTML.
 
 ```csharp
 Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesAsync(
@@ -542,7 +542,7 @@ Task<PageCaptureResult> NavigateAndCaptureResourcesResultAsync(
     CaptureTimingOptions? timingOptions = null);
 ```
 
-[`IBrowserDomCaptureService`](https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserDomCaptureService.cs): Implementations (`DefaultBrowserDomCaptureService`) return the page's response HTML, rendered HTML, and in-flight HTTP responses.
+[`IBrowserDomCaptureService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserDomCaptureService.cs): Implementations (`DefaultBrowserDomCaptureService`) return the page's response HTML, rendered HTML, and in-flight HTTP responses.
 
 ```csharp
 Task<PageCaptureResult> NavigateAndCaptureHtmlAndResourcesResultAsync(

@@ -10,8 +10,8 @@
     <Authors>Jason Keeler</Authors>
     <Description>BrowserCaptureRewrite.Abstractions is a .NET library that defines the abstractions for capturing and rewriting in-flight HTTP responses from web pages.</Description>
     <PackageTags>Browse;Browser;Capture;Intercept;HTTP;Request;Response;Rewrite;Scrape;Scraper</PackageTags>
-    <PackageProjectUrl>https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Abstractions</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/metaljase/Metalhead.BrowserCaptureRewrite.Abstractions</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/metaljase/BrowserCaptureRewrite.Abstractions</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/metaljase/BrowserCaptureRewrite.Abstractions</RepositoryUrl>
 
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
