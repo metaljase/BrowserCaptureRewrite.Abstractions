@@ -69,7 +69,7 @@ public sealed class DefaultBrowserCaptureService : IBrowserCaptureService
                 }
                 catch { return false; }
             },
-            CapturedResourceFactories.Text(),
+            CapturedResourceFactories.Auto(),
             shouldCompleteCapture);
 
         return await NavigateAndCaptureResourcesResultAsync(
@@ -111,7 +111,7 @@ public sealed class DefaultBrowserCaptureService : IBrowserCaptureService
 
         var captureSpec = new CaptureSpec(
             req => urlsToCapture.Contains(UriHelper.ParseAbsoluteUrl(req.Url)),
-            CapturedResourceFactories.Text(),
+            CapturedResourceFactories.Auto(),
             (_, resources, _) => urlsToCapture.All(url => resources.Any(r => r.Url.Equals(url))));
 
         return await NavigateAndCaptureResourcesResultAsync(
