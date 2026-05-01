@@ -4,13 +4,13 @@ using Metalhead.BrowserCaptureRewrite.Abstractions.Transport;
 namespace Metalhead.BrowserCaptureRewrite.Abstractions.Factories;
 
 /// <summary>
-/// Provides factory methods for creating resource capture delegates that produce <see cref="CapturedResource"/> instances from HTTP
-/// requests and responses.
+/// Provides factory methods for creating resource capture delegates that produce <see cref="CapturedResource"/> instances from
+/// HTTP requests and responses.
 /// </summary>
 /// <remarks>
 /// <para>
-/// These factories return delegates that can be used with resource capture specifications to extract text, binary, or auto-detected content
-/// from HTTP responses.
+/// These factories return delegates that can be used with resource capture specifications to extract text, binary, or
+/// auto-detected content from HTTP responses.
 /// </para>
 /// </remarks>
 public static class CapturedResourceFactories
@@ -49,16 +49,16 @@ public static class CapturedResourceFactories
     /// Creates a factory delegate that captures the response body as text or binary content, based on the response content type.
     /// </summary>
     /// <returns>
-    /// A delegate that produces a <see cref="CapturedResource"/> with text content if the content type is text, JSON, or XML; otherwise,
+    /// A delegate that produces a <see cref="CapturedResource"/> with text content if the content type indicates text, JSON,
+    /// XML, or script; otherwise,
     /// binary content.
     /// </returns>
     public static Func<IRequestInfo, IResponseInfo, Task<CapturedResource?>> Auto() => async (req, resp) =>
     {
         string? ct = resp.Headers.TryGetValue("content-type", out var v) ? v : null;
-        return ct is not null
-            && (ct.Contains("text", StringComparison.OrdinalIgnoreCase)
-                || ct.Contains("json", StringComparison.OrdinalIgnoreCase)
-                || ct.Contains("xml", StringComparison.OrdinalIgnoreCase))
+        bool isText = Helpers.ContentTypeHelper.IsTextBasedContentType(ct);
+
+        return isText
             ? new CapturedResource(
                 new Uri(req.Url),
                 TextContent: await resp.GetBodyAsStringAsync().ConfigureAwait(false),
