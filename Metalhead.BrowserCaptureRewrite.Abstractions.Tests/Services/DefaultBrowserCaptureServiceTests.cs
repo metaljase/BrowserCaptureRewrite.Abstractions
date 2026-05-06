@@ -28,24 +28,24 @@ public class DefaultBrowserCaptureServiceTests
     }
 
     [Fact]
-    public async Task NavigateAndCaptureResourcesAsync_ExtensionsOverload_ThrowsOnNullSession()
+    public async Task NavigateAndCaptureResourcesByFileExtensionAsync_ThrowsOnNullSession()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(() =>
-            _service.NavigateAndCaptureResourcesAsync(null!, _navOptions, _extensions, _token));
+            _service.NavigateAndCaptureResourcesByFileExtensionAsync(null!, _navOptions, _extensions, _token));
     }
 
     [Fact]
-    public async Task NavigateAndCaptureResourcesAsync_ExtensionsOverload_ThrowsOnNullUrl()
+    public async Task NavigateAndCaptureResourcesByFileExtensionAsync_ThrowsOnNullNavOptions()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(() =>
-            _service.NavigateAndCaptureResourcesAsync(_sessionMock.Object, null!, _extensions, _token));
+            _service.NavigateAndCaptureResourcesByFileExtensionAsync(_sessionMock.Object, null!, _extensions, _token));
     }
 
     [Fact]
-    public async Task NavigateAndCaptureResourcesAsync_ExtensionsOverload_ThrowsOnNullExtensions()
+    public async Task NavigateAndCaptureResourcesByFileExtensionAsync_ThrowsOnNullExtensions()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(() =>
-            _service.NavigateAndCaptureResourcesAsync(_sessionMock.Object, _navOptions, (string[])null!, _token));
+            _service.NavigateAndCaptureResourcesByFileExtensionAsync(_sessionMock.Object, _navOptions, (string[])null!, _token));
     }
 
     [Fact]

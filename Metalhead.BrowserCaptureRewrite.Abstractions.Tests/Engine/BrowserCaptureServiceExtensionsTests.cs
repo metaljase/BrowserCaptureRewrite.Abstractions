@@ -8,24 +8,24 @@ namespace Metalhead.BrowserCaptureRewrite.Abstractions.Tests.Engine;
 public class BrowserCaptureServiceExtensionsTests
 {
     [Fact]
-    public async Task NavigateAndCaptureResourcesAsync_OverloadWithFileExtensions_InvokesService()
+    public async Task NavigateAndCaptureResourcesByFileExtensionAsync_OverloadWithFileExtensions_InvokesService()
     {
         var service = new Mock<IBrowserCaptureService>(MockBehavior.Strict);
         var session = new Mock<IBrowserSession>().Object;
         var url = new Uri("https://example.com");
         var expected = new List<CapturedResource>();
-        service.Setup(s => s.NavigateAndCaptureResourcesAsync(
+        service.Setup(s => s.NavigateAndCaptureResourcesByFileExtensionAsync(
             session,
             It.IsAny<NavigationOptions>(),
             It.IsAny<string[]>(),
             It.IsAny<CancellationToken>(),
             It.IsAny<RewriteSpec?>(),
-             null,
+            null,
             It.IsAny<CaptureTimingOptions>()))
             .ReturnsAsync(expected)
             .Verifiable();
 
-        var result = await service.Object.NavigateAndCaptureResourcesAsync(
+        var result = await service.Object.NavigateAndCaptureResourcesByFileExtensionAsync(
             session,
             url,
             It.IsAny<string[]>(),
@@ -43,13 +43,13 @@ public class BrowserCaptureServiceExtensionsTests
     }
 
     [Fact]
-    public async Task NavigateAndCaptureResourcesAsync_OverloadWithUris_InvokesService()
+    public async Task NavigateAndCaptureResourcesByUrlAsync_OverloadWithUris_InvokesService()
     {
         var service = new Mock<IBrowserCaptureService>(MockBehavior.Strict);
         var session = new Mock<IBrowserSession>().Object;
         var url = new Uri("https://example.com");
         var expected = new List<CapturedResource>();
-        service.Setup(s => s.NavigateAndCaptureResourcesAsync(
+        service.Setup(s => s.NavigateAndCaptureResourcesByUrlAsync(
             session,
             It.IsAny<NavigationOptions>(),
             It.IsAny<Uri[]>(),
@@ -59,7 +59,7 @@ public class BrowserCaptureServiceExtensionsTests
             .ReturnsAsync(expected)
             .Verifiable();
 
-        var result = await service.Object.NavigateAndCaptureResourcesAsync(
+        var result = await service.Object.NavigateAndCaptureResourcesByUrlAsync(
             session,
             url,
             It.IsAny<Uri[]>(),
