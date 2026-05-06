@@ -8,24 +8,24 @@ namespace Metalhead.BrowserCaptureRewrite.Abstractions.Tests.Engine;
 public class BrowserCaptureServiceExtensionsTests
 {
     [Fact]
-    public async Task NavigateAndCaptureResourcesAsync_OverloadWithFileExtensions_InvokesService()
+    public async Task NavigateAndCaptureResourcesByFileExtensionAsync_OverloadWithFileExtensions_InvokesService()
     {
         var service = new Mock<IBrowserCaptureService>(MockBehavior.Strict);
         var session = new Mock<IBrowserSession>().Object;
         var url = new Uri("https://example.com");
         var expected = new List<CapturedResource>();
-        service.Setup(s => s.NavigateAndCaptureResourcesAsync(
+        service.Setup(s => s.NavigateAndCaptureResourcesByFileExtensionAsync(
             session,
             It.IsAny<NavigationOptions>(),
             It.IsAny<string[]>(),
             It.IsAny<CancellationToken>(),
             It.IsAny<RewriteSpec?>(),
-             null,
+            null,
             It.IsAny<CaptureTimingOptions>()))
             .ReturnsAsync(expected)
             .Verifiable();
 
-        var result = await service.Object.NavigateAndCaptureResourcesAsync(
+        var result = await service.Object.NavigateAndCaptureResourcesByFileExtensionAsync(
             session,
             url,
             It.IsAny<string[]>(),
@@ -43,13 +43,13 @@ public class BrowserCaptureServiceExtensionsTests
     }
 
     [Fact]
-    public async Task NavigateAndCaptureResourcesAsync_OverloadWithUris_InvokesService()
+    public async Task NavigateAndCaptureResourcesByUrlAsync_OverloadWithUris_InvokesService()
     {
         var service = new Mock<IBrowserCaptureService>(MockBehavior.Strict);
         var session = new Mock<IBrowserSession>().Object;
         var url = new Uri("https://example.com");
         var expected = new List<CapturedResource>();
-        service.Setup(s => s.NavigateAndCaptureResourcesAsync(
+        service.Setup(s => s.NavigateAndCaptureResourcesByUrlAsync(
             session,
             It.IsAny<NavigationOptions>(),
             It.IsAny<Uri[]>(),
@@ -59,7 +59,7 @@ public class BrowserCaptureServiceExtensionsTests
             .ReturnsAsync(expected)
             .Verifiable();
 
-        var result = await service.Object.NavigateAndCaptureResourcesAsync(
+        var result = await service.Object.NavigateAndCaptureResourcesByUrlAsync(
             session,
             url,
             It.IsAny<Uri[]>(),
@@ -134,5 +134,59 @@ public class BrowserCaptureServiceExtensionsTests
         var captureSpec = new CaptureSpec(_ => true, async (req, resp) => null, null);
 
         await Assert.ThrowsAsync<ArgumentNullException>(() => BrowserCaptureServiceExtensions.NavigateAndCaptureResourcesAsync(service, session, url, captureSpec: null!, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task NavigateAndCaptureResourcesByContentTypeAsync_OverloadWithContentTypes_InvokesService()
+    {
+        // Arrange
+        var service = new Mock<IBrowserCaptureService>(MockBehavior.Strict);
+        var session = new Mock<IBrowserSession>().Object;
+        var url = new Uri("https://example.com");
+        var contentTypes = new[] { "application/json", "video/mp4" };
+        var expected = new List<CapturedResource>();
+        service.Setup(s => s.NavigateAndCaptureResourcesByContentTypeAsync(
+            session,
+            It.IsAny<NavigationOptions>(),
+            contentTypes,
+            It.IsAny<CancellationToken>(),
+            It.IsAny<RewriteSpec?>(),
+            null,
+            It.IsAny<CaptureTimingOptions>()))
+            .ReturnsAsync(expected)
+            .Verifiable();
+
+        // Act
+        var result = await service.Object.NavigateAndCaptureResourcesByContentTypeAsync(
+            session,
+            url,
+            contentTypes,
+            CancellationToken.None);
+
+        // Assert
+        Assert.Equal(expected, result);
+        service.Verify();
+    }
+
+    [Fact]
+    public async Task NavigateAndCaptureResourcesByContentTypeAsync_ThrowsOnNullService()
+    {
+        var session = new Mock<IBrowserSession>().Object;
+        var url = new Uri("https://example.com");
+
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            BrowserCaptureServiceExtensions.NavigateAndCaptureResourcesByContentTypeAsync(
+                null!, session, url, ["application/json"], CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task NavigateAndCaptureResourcesByContentTypeAsync_ThrowsOnNullUrl()
+    {
+        var service = new Mock<IBrowserCaptureService>().Object;
+        var session = new Mock<IBrowserSession>().Object;
+
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            BrowserCaptureServiceExtensions.NavigateAndCaptureResourcesByContentTypeAsync(
+                service, session, null!, ["application/json"], CancellationToken.None));
     }
 }

@@ -121,10 +121,10 @@ public class ExtensionMinimalSample(
             new("https://metaljase.github.io/browsercapturerewrite/albums.json")];
 
         // Capture contents of in-flight HTTP responses for all three JSON files, including albums.json
-        // that's fetched after a 3-second delay.  The extension method creates a CaptureSpec
+        // that's fetched after a 3 seconds delay.  The extension method creates a CaptureSpec
         // with a capture-completion predicate that only completes once all 3 URLs have been captured.
         IReadOnlyList<CapturedResource> resultByUrls =
-            await captureService.NavigateAndCaptureResourcesAsync(
+            await captureService.NavigateAndCaptureResourcesByUrlAsync(
                 resilientSession,
                 pageUrl,
                 urlsToCapture,
@@ -151,7 +151,7 @@ public class ExtensionMinimalSample(
         // control when capture should complete, e.g. after specific URLs have been captured, or a
         // duration of time has elapsed, or when the file contains certain data.
         IReadOnlyList<CapturedResource> resultByFileExt =
-            await captureService.NavigateAndCaptureResourcesAsync(
+            await captureService.NavigateAndCaptureResourcesByFileExtensionAsync(
                 resilientSession,
                 pageUrl,
                 [".json"],
@@ -339,7 +339,7 @@ XML documentation for [`BrowserCaptureServiceExtensions`](https://github.com/met
 Methods in `BrowserCaptureServiceExtensions` only return in-flight HTTP responses, and does not return the page's response HTML or rendered HTML.
 
 ```csharp
-public static Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesAsync(
+public static Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesByFileExtensionAsync(
     this IBrowserCaptureService service,
     IBrowserSession session,
     Uri url,
@@ -353,7 +353,7 @@ public static Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesA
     RewriteSpec? rewriteSpec = null,
     Func<NavigationOptions, IReadOnlyList<CapturedResource>, DateTime, bool>? shouldCompleteCapture = null)
 
-public static Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesAsync(
+public static Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesByUrlAsync(
     this IBrowserCaptureService service,
     IBrowserSession session,
     Uri url,
@@ -365,6 +365,20 @@ public static Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesA
     TimeSpan? networkCallsTimeout = null,
     TimeSpan? pollInterval = null,
     RewriteSpec? rewriteSpec = null)
+
+public static Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesByContentTypeAsync(
+    this IBrowserCaptureService service,
+    IBrowserSession session,
+    Uri url,
+    string[] contentTypes,
+    CancellationToken cancellationToken,
+    Uri? refererUrl = null,
+    TimeSpan? navigationTimeout = null,
+    TimeSpan? networkIdleTimeout = null,
+    TimeSpan? networkCallsTimeout = null,
+    TimeSpan? pollInterval = null,
+    RewriteSpec? rewriteSpec = null,
+    Func<NavigationOptions, IReadOnlyList<CapturedResource>, DateTime, bool>? shouldCompleteCapture = null)
 ```
 
 Methods in `BrowserDomCaptureServiceExtensions` return the page's response HTML, rendered HTML, and in-flight HTTP responses.
@@ -479,39 +493,57 @@ Task<PageCaptureResult> NavigateAndCaptureResponseAndRenderedHtmlResultAsync(
 [`IBrowserCaptureService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserCaptureService.cs): Implementations (`DefaultBrowserCaptureService`) only return in-flight HTTP responses, and do not return the page's response HTML or rendered HTML.
 
 ```csharp
-Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesAsync(
+Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesByFileExtensionAsync(
     IBrowserSession session,
     NavigationOptions navOptions,
     string[] fileExtensions,
     CancellationToken cancellationToken,
     RewriteSpec? rewriteSpec = null,
     Func<NavigationOptions, IReadOnlyList<CapturedResource>, DateTime, bool>? shouldCompleteCapture = null,
-    CaptureTimingOptions? timingOptions = null);
+    CaptureTimingOptions? captureTimingOptions = null);
 
-Task<PageCaptureResult> NavigateAndCaptureResourcesResultAsync(
+Task<PageCaptureResult> NavigateAndCaptureResourcesByFileExtensionResultAsync(
     IBrowserSession session,
     NavigationOptions navOptions,
     string[] fileExtensions,
     CancellationToken cancellationToken,
     RewriteSpec? rewriteSpec = null,
     Func<NavigationOptions, IReadOnlyList<CapturedResource>, DateTime, bool>? shouldCompleteCapture = null,
-    CaptureTimingOptions? timingOptions = null);
+    CaptureTimingOptions? captureTimingOptions = null);
 
-Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesAsync(
+Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesByUrlAsync(
     IBrowserSession session,
     NavigationOptions navOptions,
     Uri[] urlsToCapture,
     CancellationToken cancellationToken,
     RewriteSpec? rewriteSpec = null,
-    CaptureTimingOptions? timingOptions = null);
+    CaptureTimingOptions? captureTimingOptions = null);
 
-Task<PageCaptureResult> NavigateAndCaptureResourcesResultAsync(
+Task<PageCaptureResult> NavigateAndCaptureResourcesByUrlResultAsync(
     IBrowserSession session,
     NavigationOptions navOptions,
     Uri[] urlsToCapture,
     CancellationToken cancellationToken,
     RewriteSpec? rewriteSpec = null,
-    CaptureTimingOptions? timingOptions = null);
+    CaptureTimingOptions? captureTimingOptions = null);
+
+Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesByContentTypeAsync(
+    IBrowserSession session,
+    NavigationOptions navOptions,
+    string[] contentTypes,
+    CancellationToken cancellationToken,
+    RewriteSpec? rewriteSpec = null,
+    Func<NavigationOptions, IReadOnlyList<CapturedResource>, DateTime, bool>? shouldCompleteCapture = null,
+    CaptureTimingOptions? captureTimingOptions = null);
+
+Task<PageCaptureResult> NavigateAndCaptureResourcesByContentTypeResultAsync(
+    IBrowserSession session,
+    NavigationOptions navOptions,
+    string[] contentTypes,
+    CancellationToken cancellationToken,
+    RewriteSpec? rewriteSpec = null,
+    Func<NavigationOptions, IReadOnlyList<CapturedResource>, DateTime, bool>? shouldCompleteCapture = null,
+    CaptureTimingOptions? captureTimingOptions = null);
 
 Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesAsync(
     IBrowserSession session,

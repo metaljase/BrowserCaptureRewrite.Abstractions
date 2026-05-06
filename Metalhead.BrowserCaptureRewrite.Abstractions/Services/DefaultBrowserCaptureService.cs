@@ -22,7 +22,20 @@ namespace Metalhead.BrowserCaptureRewrite.Abstractions.Services;
 public sealed class DefaultBrowserCaptureService : IBrowserCaptureService
 {
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesAsync(
+    [Obsolete("Use NavigateAndCaptureResourcesByFileExtensionAsync instead.  This method will be removed in a future major version.")]
+    public Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesAsync(
+        IBrowserSession session,
+        NavigationOptions navOptions,
+        string[] fileExtensions,
+        CancellationToken cancellationToken,
+        RewriteSpec? rewriteSpec = null,
+        Func<NavigationOptions, IReadOnlyList<CapturedResource>, DateTime, bool>? shouldCompleteCapture = null,
+        CaptureTimingOptions? captureTimingOptions = null) =>
+        NavigateAndCaptureResourcesByFileExtensionAsync(
+            session, navOptions, fileExtensions, cancellationToken, rewriteSpec, shouldCompleteCapture, captureTimingOptions);
+
+    /// <inheritdoc/>
+    public async Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesByFileExtensionAsync(
         IBrowserSession session,
         NavigationOptions navOptions,
         string[] fileExtensions,
@@ -31,7 +44,7 @@ public sealed class DefaultBrowserCaptureService : IBrowserCaptureService
         Func<NavigationOptions, IReadOnlyList<CapturedResource>, DateTime, bool>? shouldCompleteCapture = null,
         CaptureTimingOptions? captureTimingOptions = null)
     {
-        var result = await NavigateAndCaptureResourcesResultAsync(
+        var result = await NavigateAndCaptureResourcesByFileExtensionResultAsync(
             session, navOptions, fileExtensions, cancellationToken, rewriteSpec, shouldCompleteCapture, captureTimingOptions)
             .ConfigureAwait(false);
 
@@ -39,7 +52,20 @@ public sealed class DefaultBrowserCaptureService : IBrowserCaptureService
     }
 
     /// <inheritdoc/>
-    public async Task<PageCaptureResult> NavigateAndCaptureResourcesResultAsync(
+    [Obsolete("Use NavigateAndCaptureResourcesByFileExtensionResultAsync instead.  This method will be removed in a future major version.")]
+    public Task<PageCaptureResult> NavigateAndCaptureResourcesResultAsync(
+        IBrowserSession session,
+        NavigationOptions navOptions,
+        string[] fileExtensions,
+        CancellationToken cancellationToken,
+        RewriteSpec? rewriteSpec = null,
+        Func<NavigationOptions, IReadOnlyList<CapturedResource>, DateTime, bool>? shouldCompleteCapture = null,
+        CaptureTimingOptions? captureTimingOptions = null) =>
+        NavigateAndCaptureResourcesByFileExtensionResultAsync(
+            session, navOptions, fileExtensions, cancellationToken, rewriteSpec, shouldCompleteCapture, captureTimingOptions);
+
+    /// <inheritdoc/>
+    public async Task<PageCaptureResult> NavigateAndCaptureResourcesByFileExtensionResultAsync(
         IBrowserSession session,
         NavigationOptions navOptions,
         string[] fileExtensions,
@@ -78,7 +104,19 @@ public sealed class DefaultBrowserCaptureService : IBrowserCaptureService
     }
 
     /// <inheritdoc/>
-    public async Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesAsync(
+    [Obsolete("Use NavigateAndCaptureResourcesByUrlAsync instead.  This method will be removed in a future major version.")]
+    public Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesAsync(
+        IBrowserSession session,
+        NavigationOptions navOptions,
+        Uri[] urlsToCapture,
+        CancellationToken cancellationToken,
+        RewriteSpec? rewriteSpec = null,
+        CaptureTimingOptions? captureTimingOptions = null) =>
+        NavigateAndCaptureResourcesByUrlAsync(
+            session, navOptions, urlsToCapture, cancellationToken, rewriteSpec, captureTimingOptions);
+
+    /// <inheritdoc/>
+    public async Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesByUrlAsync(
         IBrowserSession session,
         NavigationOptions navOptions,
         Uri[] urlsToCapture,
@@ -86,7 +124,7 @@ public sealed class DefaultBrowserCaptureService : IBrowserCaptureService
         RewriteSpec? rewriteSpec = null,
         CaptureTimingOptions? captureTimingOptions = null)
     {
-        var result = await NavigateAndCaptureResourcesResultAsync(
+        var result = await NavigateAndCaptureResourcesByUrlResultAsync(
             session, navOptions, urlsToCapture, cancellationToken, rewriteSpec, captureTimingOptions)
             .ConfigureAwait(false);
 
@@ -94,7 +132,19 @@ public sealed class DefaultBrowserCaptureService : IBrowserCaptureService
     }
 
     /// <inheritdoc/>
-    public async Task<PageCaptureResult> NavigateAndCaptureResourcesResultAsync(
+    [Obsolete("Use NavigateAndCaptureResourcesByUrlResultAsync instead.  This method will be removed in a future major version.")]
+    public Task<PageCaptureResult> NavigateAndCaptureResourcesResultAsync(
+        IBrowserSession session,
+        NavigationOptions navOptions,
+        Uri[] urlsToCapture,
+        CancellationToken cancellationToken,
+        RewriteSpec? rewriteSpec = null,
+        CaptureTimingOptions? captureTimingOptions = null) =>
+        NavigateAndCaptureResourcesByUrlResultAsync(
+            session, navOptions, urlsToCapture, cancellationToken, rewriteSpec, captureTimingOptions);
+
+    /// <inheritdoc/>
+    public async Task<PageCaptureResult> NavigateAndCaptureResourcesByUrlResultAsync(
         IBrowserSession session,
         NavigationOptions navOptions,
         Uri[] urlsToCapture,
@@ -113,6 +163,60 @@ public sealed class DefaultBrowserCaptureService : IBrowserCaptureService
             req => urlsToCapture.Contains(UriHelper.ParseAbsoluteUrl(req.Url)),
             CapturedResourceFactories.Auto(),
             (_, resources, _) => urlsToCapture.All(url => resources.Any(r => r.Url.Equals(url))));
+
+        return await NavigateAndCaptureResourcesResultAsync(
+            session, navOptions, captureSpec, rewriteSpec, cancellationToken, captureTimingOptions)
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public async Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesByContentTypeAsync(
+        IBrowserSession session,
+        NavigationOptions navOptions,
+        string[] contentTypes,
+        CancellationToken cancellationToken,
+        RewriteSpec? rewriteSpec = null,
+        Func<NavigationOptions, IReadOnlyList<CapturedResource>, DateTime, bool>? shouldCompleteCapture = null,
+        CaptureTimingOptions? captureTimingOptions = null)
+    {
+        var result = await NavigateAndCaptureResourcesByContentTypeResultAsync(
+            session, navOptions, contentTypes, cancellationToken, rewriteSpec, shouldCompleteCapture, captureTimingOptions)
+            .ConfigureAwait(false);
+
+        return result.Resources;
+    }
+
+    /// <inheritdoc/>
+    public async Task<PageCaptureResult> NavigateAndCaptureResourcesByContentTypeResultAsync(
+        IBrowserSession session,
+        NavigationOptions navOptions,
+        string[] contentTypes,
+        CancellationToken cancellationToken,
+        RewriteSpec? rewriteSpec = null,
+        Func<NavigationOptions, IReadOnlyList<CapturedResource>, DateTime, bool>? shouldCompleteCapture = null,
+        CaptureTimingOptions? captureTimingOptions = null)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(navOptions);
+        ArgumentNullException.ThrowIfNull(contentTypes);
+
+        if (contentTypes.Length == 0)
+            throw new ArgumentException("At least one content type must be provided.", nameof(contentTypes));
+
+        var normalizedContentTypes = ContentTypeHelper.NormalizeContentTypes(contentTypes);
+        if (normalizedContentTypes.Length == 0)
+            throw new ArgumentException("No valid content types after normalization.", nameof(contentTypes));
+
+        var captureSpec = new CaptureSpec(
+            _ => true,
+            async (req, resp) =>
+            {
+                resp.Headers.TryGetValue("content-type", out var responseContentType);
+                return !ContentTypeHelper.HasMatchingContentType(responseContentType, normalizedContentTypes)
+                    ? null
+                    : await CapturedResourceFactories.Auto()(req, resp).ConfigureAwait(false);
+            },
+            shouldCompleteCapture);
 
         return await NavigateAndCaptureResourcesResultAsync(
             session, navOptions, captureSpec, rewriteSpec, cancellationToken, captureTimingOptions)
