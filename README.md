@@ -58,7 +58,9 @@ XML documentation for [`NavigationTimingOptions`](https://github.com/metaljase/B
 }
 ```
 
-Register the options and their validators in your project's dependency injection container:
+Adding the following registrations to your application's dependency injection container will bind the configuration sections shown above to their corresponding options classes and register their validators.
+
+> NOTE: Some implementations of `BrowserCaptureRewrite.Abstractions` may perform this setup for you.  For example, `BrowserCaptureRewrite.Playwright` provides an overload of [`AddPlaywrightCaptureRewrite(IConfiguration)`](https://github.com/metaljase/BrowserCaptureRewrite.Playwright#configuration) that automatically binds these options and registers their validators.  If you are using such an implementation, you do not need to add the code below manually.
 ```csharp
 builder.Services.AddOptions<SignInOptions>().Bind(builder.Configuration
     .GetSection(SignInOptions.SectionName));
