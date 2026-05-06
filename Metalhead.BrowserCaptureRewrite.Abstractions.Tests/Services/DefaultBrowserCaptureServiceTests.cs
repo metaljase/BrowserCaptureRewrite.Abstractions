@@ -130,4 +130,39 @@ public class DefaultBrowserCaptureServiceTests
             _service.NavigateAndCaptureResourcesAsync(_sessionMock.Object, _navOptions, _spec, _token));
         Assert.Equal(PageLoadStatus.NetworkIdleTimeoutExceeded, ex.PageLoadStatus);
     }
+
+    [Fact]
+    public async Task NavigateAndCaptureResourcesByContentTypeAsync_ThrowsOnNullSession()
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _service.NavigateAndCaptureResourcesByContentTypeAsync(null!, _navOptions, ["application/json"], _token));
+    }
+
+    [Fact]
+    public async Task NavigateAndCaptureResourcesByContentTypeAsync_ThrowsOnNullNavOptions()
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _service.NavigateAndCaptureResourcesByContentTypeAsync(_sessionMock.Object, null!, ["application/json"], _token));
+    }
+
+    [Fact]
+    public async Task NavigateAndCaptureResourcesByContentTypeAsync_ThrowsOnNullContentTypes()
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(() =>
+            _service.NavigateAndCaptureResourcesByContentTypeAsync(_sessionMock.Object, _navOptions, null!, _token));
+    }
+
+    [Fact]
+    public async Task NavigateAndCaptureResourcesByContentTypeAsync_ThrowsOnEmptyContentTypes()
+    {
+        await Assert.ThrowsAsync<ArgumentException>(() =>
+            _service.NavigateAndCaptureResourcesByContentTypeAsync(_sessionMock.Object, _navOptions, [], _token));
+    }
+
+    [Fact]
+    public async Task NavigateAndCaptureResourcesByContentTypeAsync_ThrowsOnBlankContentTypes()
+    {
+        await Assert.ThrowsAsync<ArgumentException>(() =>
+            _service.NavigateAndCaptureResourcesByContentTypeAsync(_sessionMock.Object, _navOptions, ["", "  "], _token));
+    }
 }

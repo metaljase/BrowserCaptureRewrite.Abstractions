@@ -5,8 +5,87 @@ namespace Metalhead.BrowserCaptureRewrite.Abstractions.Tests.Helpers;
 public class ContentTypeHelperTests
 {
     [Theory]
-    // Standard text types
-    [InlineData("text/html", true)]
+    // Unparameterised candidate: matches response with no parameters
+    [InlineData("application/json", new[] { "application/json" }, true)]
+    // Unparameterised candidate: wildcard — matches response that has parameters
+    [InlineData("application/json; charset=utf-8", new[] { "application/json" }, true)]
+    // Unparameterised candidate: wildcard — matches response with multiple parameters
+    [InlineData("application/json; charset=utf-8; boundary=something", new[] { "application/json" }, true)]
+    // Parameterised candidate: matches response with exact same parameter (case-insensitive)
+    [InlineData("application/json; charset=utf-8", new[] { "application/json; charset=utf-8" }, true)]
+    [InlineData("application/json; charset=UTF-8", new[] { "application/json; charset=utf-8" }, true)]
+    // Parameterised candidate: subset match — response has extra parameters beyond what candidate specifies
+    [InlineData("application/json; boundary=something; charset=utf-8", new[] { "application/json; charset=utf-8" }, true)]
+    // Parameterised candidate: order-insensitive — candidate parameters in different order to response
+    [InlineData("application/json; boundary=something; charset=utf-8", new[] { "application/json; charset=utf-8; boundary=something" }, true)]
+    // Parameterised candidate: no match — response missing the required parameter
+    [InlineData("application/json", new[] { "application/json; charset=utf-8" }, false)]
+    // Parameterised candidate: no match — parameter value differs
+    [InlineData("application/json; charset=utf-16", new[] { "application/json; charset=utf-8" }, false)]
+    // Multiple candidates: first doesn't match but second does
+    [InlineData("VIDEO/MP4", new[] { "text/html", "video/mp4" }, true)]
+    // Wrong media type
+    [InlineData("application/json", new[] { "text/html" }, false)]
+    // Empty/null response
+    [InlineData("", new[] { "text/html" }, false)]
+    [InlineData(null, new[] { "text/html" }, false)]
+    // Empty candidate list
+    [InlineData("text/html", new string[0], false)]
+    public void HasMatchingContentType_CandidateSet_EvaluatesMatchResult(
+        string? responseContentType, string[] candidates, bool expected)
+    {
+        // Arrange
+        var normalized = ContentTypeHelper.NormalizeContentTypes(candidates);
+
+        // Act
+        var result = ContentTypeHelper.HasMatchingContentType(responseContentType, normalized);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void NormalizeContentTypes_Null_ReturnsEmpty()
+    {
+        // Act
+        var result = ContentTypeHelper.NormalizeContentTypes(null!);
+
+        // Assert
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public void NormalizeContentTypes_MixedCasingParametersAndDuplicates_ReturnsNormalizedDistinctSet()
+    {
+        // Act
+        var result = ContentTypeHelper.NormalizeContentTypes(
+            "APPLICATION/JSON; charset=utf-8", "video/mp4", "  text/html  ", "application/json; charset=utf-8");
+
+        // Assert
+        Assert.Equal(["application/json; charset=utf-8", "video/mp4", "text/html"], result);
+    }
+
+    [Fact]
+    public void NormalizeContentTypes_ParametersAreSortedAlphabetically()
+    {
+        // Act
+        var result = ContentTypeHelper.NormalizeContentTypes("application/json; boundary=something; charset=utf-8");
+
+        // Assert
+        Assert.Equal(["application/json; boundary=something; charset=utf-8"], result);
+    }
+
+    [Fact]
+    public void NormalizeContentTypes_BlanksOnly_ReturnsEmpty()
+    {
+        // Act
+        var result = ContentTypeHelper.NormalizeContentTypes("", "  ", null!);
+
+        // Assert
+        Assert.Empty(result);
+    }
+
+    [Theory]
     [InlineData("text/plain", true)]
     [InlineData("text/xml", true)]
     [InlineData("text/css", true)]

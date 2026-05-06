@@ -170,6 +170,60 @@ public sealed class DefaultBrowserCaptureService : IBrowserCaptureService
     }
 
     /// <inheritdoc/>
+    public async Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesByContentTypeAsync(
+        IBrowserSession session,
+        NavigationOptions navOptions,
+        string[] contentTypes,
+        CancellationToken cancellationToken,
+        RewriteSpec? rewriteSpec = null,
+        Func<NavigationOptions, IReadOnlyList<CapturedResource>, DateTime, bool>? shouldCompleteCapture = null,
+        CaptureTimingOptions? captureTimingOptions = null)
+    {
+        var result = await NavigateAndCaptureResourcesByContentTypeResultAsync(
+            session, navOptions, contentTypes, cancellationToken, rewriteSpec, shouldCompleteCapture, captureTimingOptions)
+            .ConfigureAwait(false);
+
+        return result.Resources;
+    }
+
+    /// <inheritdoc/>
+    public async Task<PageCaptureResult> NavigateAndCaptureResourcesByContentTypeResultAsync(
+        IBrowserSession session,
+        NavigationOptions navOptions,
+        string[] contentTypes,
+        CancellationToken cancellationToken,
+        RewriteSpec? rewriteSpec = null,
+        Func<NavigationOptions, IReadOnlyList<CapturedResource>, DateTime, bool>? shouldCompleteCapture = null,
+        CaptureTimingOptions? captureTimingOptions = null)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(navOptions);
+        ArgumentNullException.ThrowIfNull(contentTypes);
+
+        if (contentTypes.Length == 0)
+            throw new ArgumentException("At least one content type must be provided.", nameof(contentTypes));
+
+        var normalizedContentTypes = ContentTypeHelper.NormalizeContentTypes(contentTypes);
+        if (normalizedContentTypes.Length == 0)
+            throw new ArgumentException("No valid content types after normalization.", nameof(contentTypes));
+
+        var captureSpec = new CaptureSpec(
+            _ => true,
+            async (req, resp) =>
+            {
+                resp.Headers.TryGetValue("content-type", out var responseContentType);
+                return !ContentTypeHelper.HasMatchingContentType(responseContentType, normalizedContentTypes)
+                    ? null
+                    : await CapturedResourceFactories.Auto()(req, resp).ConfigureAwait(false);
+            },
+            shouldCompleteCapture);
+
+        return await NavigateAndCaptureResourcesResultAsync(
+            session, navOptions, captureSpec, rewriteSpec, cancellationToken, captureTimingOptions)
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
     public async Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesAsync(
         IBrowserSession session,
         NavigationOptions navOptions,

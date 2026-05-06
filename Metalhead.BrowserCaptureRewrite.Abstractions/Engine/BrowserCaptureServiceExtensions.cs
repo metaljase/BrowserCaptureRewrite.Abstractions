@@ -186,6 +186,55 @@ public static class BrowserCaptureServiceExtensions
     }
 
     /// <summary>
+    /// Captures resources whose HTTP response <c>Content-Type</c> header matches any of the specified media types for
+    /// the given URL using the provided <see cref="IBrowserCaptureService"/>.
+    /// </summary>
+    /// <param name="service">The capture service to use.  Must not be <see langword="null"/>.</param>
+    /// <param name="session">The browser session to use.  Must not be <see langword="null"/>.</param>
+    /// <param name="url">The target URL to navigate to.  Must not be <see langword="null"/>.</param>
+    /// <param name="contentTypes">Array of media types to capture (e.g., <c>"application/json"</c>, <c>"video/mp4"</c>).
+    /// Must not be <see langword="null"/> or empty.  An entry without parameters (e.g., <c>"application/json"</c>)
+    /// matches any response with that media type regardless of its parameters.  An entry with parameters (e.g.,
+    /// <c>"application/json; charset=utf-8"</c>) requires every specified parameter to be present in the response
+    /// (subset match, order-insensitive, case-insensitive).</param>
+    /// <param name="cancellationToken">Token to observe for cancellation.</param>
+    /// <param name="refererUrl">Optional referer URL for navigation.</param>
+    /// <param name="navigationTimeout">Optional timeout for page navigation.</param>
+    /// <param name="networkIdleTimeout">Optional timeout to wait for network idle before capturing resources.</param>
+    /// <param name="networkCallsTimeout">Optional timeout for network calls during capture.</param>
+    /// <param name="pollInterval">Optional polling interval for completion checks.</param>
+    /// <param name="rewriteSpec">Optional specification for rewriting HTTP responses during navigation
+    /// and resource capture.</param>
+    /// <param name="shouldCompleteCapture">Optional predicate to determine when capture is complete.</param>
+    /// <returns>A read-only list of captured resources.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="service"/> or <paramref name="url"/> is
+    /// <see langword="null"/>.</exception>
+    /// <exception cref="OperationCanceledException">Thrown if the operation is cancelled.</exception>
+    public static Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesByContentTypeAsync(
+        this IBrowserCaptureService service,
+        IBrowserSession session,
+        Uri url,
+        string[] contentTypes,
+        CancellationToken cancellationToken,
+        Uri? refererUrl = null,
+        TimeSpan? navigationTimeout = null,
+        TimeSpan? networkIdleTimeout = null,
+        TimeSpan? networkCallsTimeout = null,
+        TimeSpan? pollInterval = null,
+        RewriteSpec? rewriteSpec = null,
+        Func<NavigationOptions, IReadOnlyList<CapturedResource>, DateTime, bool>? shouldCompleteCapture = null)
+    {
+        ArgumentNullException.ThrowIfNull(service);
+        ArgumentNullException.ThrowIfNull(url);
+
+        var navOptions = new NavigationOptions(url, refererUrl, navigationTimeout);
+        var captureTimingOptions = new CaptureTimingOptions(networkIdleTimeout, networkCallsTimeout, pollInterval);
+
+        return service.NavigateAndCaptureResourcesByContentTypeAsync(
+            session, navOptions, contentTypes, cancellationToken, rewriteSpec, shouldCompleteCapture, captureTimingOptions);
+    }
+
+    /// <summary>
     /// Captures resources matching the specified capture specification for the given URL using the provided
     /// <see cref="IBrowserCaptureService"/>.
     /// </summary>
