@@ -641,13 +641,18 @@ XML documentation for [`RewriteSpec`](https://github.com/metaljase/BrowserCaptur
 
 ```csharp
 public sealed class RewriteSpec(
-    Func<IRequestInfo, bool> shouldRewrite, Func<IRequestInfo, IResponseInfo, Task<ResponseRewriteResult>> tryRewriteResponseAsync)
+    Func<IRequestInfo, bool> shouldRewrite,
+    Func<IRequestInfo, IResponseInfo,
+    Task<ResponseRewriteResult>> tryRewriteResponseAsync)
 ```
 
 The `shouldRewrite` predicate is evaluated for each in-flight HTTP request to determine if the response should be rewritten.  If `shouldRewrite` returns `true`, the `tryRewriteResponseAsync` delegate is invoked to attempt a rewrite of the response.  It returns a [`ResponseRewriteResult`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/ResponseRewriteResult.cs) indicating whether or not the response was rewritten, including the rewritten response body if it was rewritten:
 
 ```csharp
-public readonly record struct ResponseRewriteResult(bool IsRewritten, string? NewBody, string? ContentTypeOverride)
+public readonly record struct ResponseRewriteResult(
+    bool IsRewritten,
+    string? NewBody,
+    string? ContentTypeOverride)
 {
     public static readonly ResponseRewriteResult NotRewritten = new(false, null, null);
 }
