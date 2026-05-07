@@ -632,7 +632,7 @@ The optional `shouldCompleteCapture` predicate specifies whether or not <u>all</
 
 When `shouldCompleteCapture` is `null`, capture completes automatically once Playwright detects network idle (no network activity for 500ms).  `NetworkIdleTimeoutSeconds` in [`CaptureTimingOptions`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/CaptureTimingOptions.cs) controls the maximum time to wait for that idle state to be reached - a `null` value uses Playwright's default timeout (30 seconds).
 
-When `shouldCompleteCapture` is provided, capture is also subject to the overall `CaptureTimeoutSeconds` limit configured in [`CaptureTimingOptions`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/CaptureTimingOptions.cs).
+When `shouldCompleteCapture` is provided, capture is also subject to the overall `CaptureTimeoutSeconds` limit configured in [`CaptureTimingOptions`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/CaptureTimingOptions.cs), unless `CaptureTimeoutSeconds` is `null` or zero.
 
 ## RewriteSpec
 A `RewriteSpec` instance encapsulates the logic for determining which in-flight HTTP responses should be rewritten, and how to rewrite them.
