@@ -5,7 +5,8 @@ Because intercepting and modifying HTTP responses happens in-flight before they 
 
 Optionally, resiliency features such as retry logic and timeout handling can be configured, and the ability to manually sign-in is supported, for when the target web page requires authentication.
 
-A key part for capturing in-flight HTTP responses is creating a `CaptureSpec` instance, which specifies what HTTP responses should be captured.  Similarly, rewriting in-flight HTTP responses relies on a `RewriteSpec` instance, which specifies which responses should be rewritten and how.
+> [!NOTE]
+> A key part for capturing in-flight HTTP responses is creating a `CaptureSpec` instance, which specifies what HTTP responses should be captured.  Similarly, rewriting in-flight HTTP responses relies on a `RewriteSpec` instance, which specifies which responses should be rewritten and how.
 
 With a browser instance, an overload in one of the [convenience classes or extension methods](#capturerewrite-methods) can be called to perform the navigation, capture, and optional rewrite, by providing a `CaptureSpec` and optionally a `RewriteSpec` instance.
 
@@ -60,7 +61,9 @@ XML documentation for [`NavigationTimingOptions`](https://github.com/metaljase/B
 
 Adding the following registrations to your application's dependency injection container will bind the configuration sections shown above to their corresponding options classes and register their validators.
 
-> NOTE: Some implementations of `BrowserCaptureRewrite.Abstractions` may perform this setup for you.  For example, `BrowserCaptureRewrite.Playwright` provides an overload of [`AddPlaywrightCaptureRewrite(IConfiguration)`](https://github.com/metaljase/BrowserCaptureRewrite.Playwright#configuration) that automatically binds these options and registers their validators.  If you are using such an implementation, you do not need to add the code below manually.
+> [!TIP]
+> Some implementations of `BrowserCaptureRewrite.Abstractions` may perform this setup for you.  For example, `BrowserCaptureRewrite.Playwright` provides an overload of [`AddPlaywrightCaptureRewrite(IConfiguration)`](https://github.com/metaljase/BrowserCaptureRewrite.Playwright#configuration) that automatically binds these options and registers their validators.  If you are using such an implementation, you do not need to add the code below manually.
+
 ```csharp
 builder.Services.AddOptions<SignInOptions>().Bind(builder.Configuration
     .GetSection(SignInOptions.SectionName));
@@ -295,6 +298,7 @@ public class ConvenienceMinimalSample(
 The methods for capturing and rewriting in-flight HTTP responses return either a `Task<IReadOnlyList<CapturedResource>>` or a `Task<PageCaptureResult>`, depending on the method called.
 
 XML documentation for [`CapturedResource`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/CapturedResource.cs), [`PageCaptureResult`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/PageCaptureResult.cs), [`PageLoadStatus`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Enums/PageLoadStatus.cs), and [`CaptureStatus`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Enums/CaptureStatus.cs) is available in the source code.
+
 ```csharp
 public sealed record CapturedResource(
     Uri Url,
@@ -336,7 +340,8 @@ public enum CaptureStatus
 ## Extension methods
 XML documentation for [`BrowserCaptureServiceExtensions`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/BrowserCaptureServiceExtensions.cs) and [`BrowserDomCaptureServiceExtensions`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/BrowserDomCaptureServiceExtensions.cs) is available in the source code.
 
-Methods in `BrowserCaptureServiceExtensions` only return in-flight HTTP responses, and does not return the page's response HTML or rendered HTML.
+> [!IMPORTANT]
+> Methods in `BrowserCaptureServiceExtensions` only return in-flight HTTP responses, and does not return the page's response HTML or rendered HTML.
 
 ```csharp
 public static Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesByFileExtensionAsync(
@@ -381,7 +386,9 @@ public static Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesB
     Func<NavigationOptions, IReadOnlyList<CapturedResource>, DateTime, bool>? shouldCompleteCapture = null)
 ```
 
-Methods in `BrowserDomCaptureServiceExtensions` return the page's response HTML, rendered HTML, and in-flight HTTP responses.
+> [!IMPORTANT]
+> Methods in `BrowserDomCaptureServiceExtensions` return the page's response HTML, rendered HTML, and in-flight HTTP responses.
+
 ```csharp
 public static async Task<PageCaptureResult> NavigateAndCaptureHtmlAndResourcesResultAsync(
     this IBrowserDomCaptureService service,
@@ -412,7 +419,8 @@ public static async Task<PageCaptureResult> NavigateAndCaptureHtmlAndResourcesRe
 ## Convenience classes / interfaces
 XML documentation for [`IBrowserDomService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserDomService.cs), [`IBrowserCaptureService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserCaptureService.cs), and [`IBrowserDomCaptureService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserDomCaptureService.cs) is available in the source code.
 
-[`IBrowserDomService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserDomService.cs):  Implementations (`DefaultBrowserDomService`) only return the page's response HTML and/or rendered HTML, and do not return in-flight HTTP responses.
+> [!IMPORTANT]
+> [`IBrowserDomService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserDomService.cs):  Implementations (`DefaultBrowserDomService`) only return the page's response HTML and/or rendered HTML, and do not return in-flight HTTP responses.
 
 ```csharp
 Task<string?> NavigateAndCaptureResponseHtmlAsync(
@@ -490,7 +498,8 @@ Task<PageCaptureResult> NavigateAndCaptureResponseAndRenderedHtmlResultAsync(
     CancellationToken cancellationToken = default);
 ```
 
-[`IBrowserCaptureService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserCaptureService.cs): Implementations (`DefaultBrowserCaptureService`) only return in-flight HTTP responses, and do not return the page's response HTML or rendered HTML.
+> [!IMPORTANT]
+> [`IBrowserCaptureService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserCaptureService.cs): Implementations (`DefaultBrowserCaptureService`) only return in-flight HTTP responses, and do not return the page's response HTML or rendered HTML.
 
 ```csharp
 Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesByFileExtensionAsync(
@@ -576,7 +585,8 @@ Task<PageCaptureResult> NavigateAndCaptureResourcesResultAsync(
     CaptureTimingOptions? timingOptions = null);
 ```
 
-[`IBrowserDomCaptureService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserDomCaptureService.cs): Implementations (`DefaultBrowserDomCaptureService`) return the page's response HTML, rendered HTML, and in-flight HTTP responses.
+> [!IMPORTANT]
+> [`IBrowserDomCaptureService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserDomCaptureService.cs): Implementations (`DefaultBrowserDomCaptureService`) return the page's response HTML, rendered HTML, and in-flight HTTP responses.
 
 ```csharp
 Task<PageCaptureResult> NavigateAndCaptureHtmlAndResourcesResultAsync(
