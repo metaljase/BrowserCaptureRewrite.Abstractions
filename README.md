@@ -344,7 +344,7 @@ public enum CaptureStatus
 XML documentation for [`BrowserCaptureServiceExtensions`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/BrowserCaptureServiceExtensions.cs) and [`BrowserDomCaptureServiceExtensions`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/BrowserDomCaptureServiceExtensions.cs) is available in the source code.
 
 > [!IMPORTANT]
-> Methods in `BrowserCaptureServiceExtensions` only return in-flight HTTP responses, and does not return the page's response HTML or rendered HTML.
+> Methods in `BrowserCaptureServiceExtensions` only return in-flight HTTP responses, and **do not** return the page's response HTML or rendered HTML.
 
 ```csharp
 public static Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesByFileExtensionAsync(
@@ -390,7 +390,7 @@ public static Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesB
 ```
 
 > [!IMPORTANT]
-> Methods in `BrowserDomCaptureServiceExtensions` return the page's response HTML, rendered HTML, and in-flight HTTP responses.
+> Methods in `BrowserDomCaptureServiceExtensions` return the page's response HTML, rendered HTML, **and** in-flight HTTP responses.
 
 ```csharp
 public static async Task<PageCaptureResult> NavigateAndCaptureHtmlAndResourcesResultAsync(
@@ -423,7 +423,7 @@ public static async Task<PageCaptureResult> NavigateAndCaptureHtmlAndResourcesRe
 XML documentation for [`IBrowserDomService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserDomService.cs), [`IBrowserCaptureService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserCaptureService.cs), and [`IBrowserDomCaptureService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserDomCaptureService.cs) is available in the source code.
 
 > [!IMPORTANT]
-> [`IBrowserDomService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserDomService.cs): Implementations (`DefaultBrowserDomService`) only return the page's response HTML and/or rendered HTML, and do not return in-flight HTTP responses.
+> [`IBrowserDomService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserDomService.cs): Implementations (`DefaultBrowserDomService`) only return the page's response HTML and/or rendered HTML, and **do not** return in-flight HTTP responses.
 
 ```csharp
 Task<string?> NavigateAndCaptureResponseHtmlAsync(
@@ -502,7 +502,7 @@ Task<PageCaptureResult> NavigateAndCaptureResponseAndRenderedHtmlResultAsync(
 ```
 
 > [!IMPORTANT]
-> [`IBrowserCaptureService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserCaptureService.cs): Implementations (`DefaultBrowserCaptureService`) only return in-flight HTTP responses, and do not return the page's response HTML or rendered HTML.
+> [`IBrowserCaptureService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserCaptureService.cs): Implementations (`DefaultBrowserCaptureService`) only return in-flight HTTP responses, and **do not** return the page's response HTML or rendered HTML.
 
 ```csharp
 Task<IReadOnlyList<CapturedResource>> NavigateAndCaptureResourcesByFileExtensionAsync(
@@ -589,7 +589,7 @@ Task<PageCaptureResult> NavigateAndCaptureResourcesResultAsync(
 ```
 
 > [!IMPORTANT]
-> [`IBrowserDomCaptureService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserDomCaptureService.cs): Implementations (`DefaultBrowserDomCaptureService`) return the page's response HTML, rendered HTML, and in-flight HTTP responses.
+> [`IBrowserDomCaptureService`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Engine/IBrowserDomCaptureService.cs): Implementations (`DefaultBrowserDomCaptureService`) return the page's response HTML, rendered HTML, **and** in-flight HTTP responses.
 
 ```csharp
 Task<PageCaptureResult> NavigateAndCaptureHtmlAndResourcesResultAsync(
@@ -620,7 +620,7 @@ public sealed class CaptureSpec(
     Func<NavigationOptions, IReadOnlyList<CapturedResource>, DateTime, bool>? shouldCompleteCapture = null)
 ```
 
-The `shouldCapture` predicate is evaluated for each in-flight HTTP request to determine if it should be captured.  If `shouldCapture` returns `true` for a given request, the `tryCreateCapturedResourceAsync` delegate is invoked to create a [`CapturedResource`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/CapturedResource.cs) from the request/response pair, which is added to the list of captured resources.  `tryCreateCapturedResourceAsync` may return `null` to discard a response that passed `ShouldCapture` - useful when the delegate needs to inspect the response body to decide whether it is actually wanted.
+The `shouldCapture` predicate is evaluated for each in-flight HTTP request to determine if it should be captured.  If `shouldCapture` returns `true` for a given request, the `tryCreateCapturedResourceAsync` delegate is invoked to create a [`CapturedResource`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/CapturedResource.cs) from the request/response pair, which is added to the list of captured resources.  `tryCreateCapturedResourceAsync` may return `null` to discard a response that passed `shouldCapture` - useful when the delegate needs to inspect the response body to decide whether it is actually wanted.
 
 The optional `shouldCompleteCapture` predicate specifies whether or not <u>all</u> of the responses you're interested in have been captured.  The `shouldCompleteCapture` predicate will be polled in a loop, pausing for the interval configured in [`CaptureTimingOptions`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/CaptureTimingOptions.cs) (default: 250ms) between each poll - until it returns `true`, at which point capture completes, and the collected resources are returned.  Its parameters are:
 
@@ -632,7 +632,7 @@ The optional `shouldCompleteCapture` predicate specifies whether or not <u>all</
 
 When `shouldCompleteCapture` is `null`, capture completes automatically once Playwright detects network idle (no network activity for 500ms).  `NetworkIdleTimeoutSeconds` in [`CaptureTimingOptions`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/CaptureTimingOptions.cs) controls the maximum time to wait for that idle state to be reached - a `null` value uses Playwright's default timeout (30 seconds).
 
-When `shouldCompleteCapture` is provided, capture is also subject to the overall `CaptureTimeoutSeconds` limit configured in [`CaptureTimingOptions`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/CaptureTimingOptions.cs), unless `CaptureTimeoutSeconds` is `null` or zero.
+When `shouldCompleteCapture` is provided, capture is also subject to the overall `CaptureTimeoutSeconds` limit configured in [`CaptureTimingOptions`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/CaptureTimingOptions.cs).  If `CaptureTimeoutSeconds` is `null` or zero, no overall timeout is applied.
 
 ## RewriteSpec
 A `RewriteSpec` instance encapsulates the logic for determining which in-flight HTTP responses should be rewritten, and how to rewrite them.
@@ -645,7 +645,7 @@ public sealed class RewriteSpec(
     Func<IRequestInfo, IResponseInfo, Task<ResponseRewriteResult>> tryRewriteResponseAsync)
 ```
 
-The `shouldRewrite` predicate is evaluated for each in-flight HTTP request to determine if the response should be rewritten.  If `shouldRewrite` returns `true`, the `tryRewriteResponseAsync` delegate is invoked to attempt a rewrite of the response.  It returns a [`ResponseRewriteResult`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/ResponseRewriteResult.cs) indicating whether or not the response was rewritten, including the rewritten response body if it was rewritten:
+The `shouldRewrite` predicate is evaluated for each in-flight HTTP request to determine whether the response should be rewritten.  If `shouldRewrite` returns `true`, the `tryRewriteResponseAsync` delegate is invoked to attempt the rewrite.  This delegate returns a [`ResponseRewriteResult`](https://github.com/metaljase/BrowserCaptureRewrite.Abstractions/blob/master/Metalhead.BrowserCaptureRewrite.Abstractions/Models/ResponseRewriteResult.cs) indicating whether a rewrite occurred, and includes the rewritten response body when applicable:
 
 ```csharp
 public readonly record struct ResponseRewriteResult(
